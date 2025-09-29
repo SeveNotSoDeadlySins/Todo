@@ -13,7 +13,7 @@ const TodoItem = (props) => {
                 <>
                     {props.todo.text}
                     <Badge pill bg='success' className='float-end' onClick={() => {props.makeAsDone(props.todo.id)}}>&#10003;</Badge>
-                    <button pill bg='danger' className="float-end" onClick={() => {props.onDelete(props.todo.id)}}>Delete</button>
+                    <Badge pill bg='danger pr-5'  className="float-end" onClick={() => {props.handleDelete(props.todo.id)}}>Delete</Badge>
                 </>
             )}
 

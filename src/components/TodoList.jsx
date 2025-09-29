@@ -1,13 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import TodoItem from './TodoItem';
 
+
+let initialList = [
+    { id: 1, text: "Clean the house", done: true},
+    { id: 2, text: "Buy Milk", done: false},
+    { id: 3, text: "Create todo app using React", done: false}
+];
+
 const TodoList = () => {
     const [textInput, setTextInput] = useState('');
 
-    const handeTextInput = e => {
+    const [list, setList] = useState(() => {
+        const saved = localStorage.getItem('todos');
+        return saved ? JSON.parse(saved) : initialList;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('todos', JSON.stringify(list));
+    }, [list]);
+
+    const handleTextInput = e => {
         setTextInput(e.target.value);
     }
 
@@ -16,24 +32,16 @@ const TodoList = () => {
             if(item.id === id) {
                 item.done = true;
             }
-
             return item;
         });
 
         setList(newList);
     }
 
-    const onDelete = (id) => {
-        const deleteList = list.map((item) => {
-            if(item.id === id) {
-                item.done = false
-            }
-
-            return item;
-        });
-
-        setList(deleteList)
-    }
+    const handleDelete = (id) => {
+        const newList = list.filter((item) => item.id !== id);
+        setList(newList)
+    };
 
     const addTodoItem = () => {
         let newTodo = {
@@ -46,16 +54,9 @@ const TodoList = () => {
         setTextInput('');
     }
 
-    let initialList = [
-        { id: 1, text: "Clean the house", done: true},
-        { id: 2, text: "Buy Milk", done: false},
-        { id: 3, text: "Create todo app using React", done: false},
-    ];
-
-    const [list, setList] = useState(initialList);
 
     let todoItems = list.map((item,index) => {
-        return <TodoItem key={index} makeAsDone={makeAsDone} todo={item} />
+        return <TodoItem key={index} makeAsDone={makeAsDone} todo={item} handleDelete={handleDelete} />
     });
 
     return (
@@ -67,7 +68,7 @@ const TodoList = () => {
             </ListGroup>
 
             <Card.Footer>
-                <input type='text' onChange={handeTextInput} value={textInput} />
+                <input type='text' onChange={handleTextInput} value={textInput} />
                 <Button varient='primary' className='float-end' onClick={addTodoItem}>Add</Button>
 
             </Card.Footer>
